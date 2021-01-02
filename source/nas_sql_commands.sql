@@ -11,7 +11,10 @@
 /* Remove */
 'DELETE FROM download_queue WHERE 1=1 '+userClause(options)+" "+idClause(ids)
 /* Add torrent */
-
+/* With given destination */
+"INSERT INTO download_queue (username, url, status, filename, pid, created_time, destination) VALUES (%s, %s, 1, %s, -1, %s, %s)"
+/* With default destination */
+"INSERT INTO download_queue (username, url, status, filename, pid, created_time) VALUES (%s, %s, 1, %s, -1, %s)"
 /* Add 
 def add(conn, options, urls):
     if options.user == None:
@@ -67,3 +70,42 @@ def createSelection(columns):
             selection.add(col)
     return ', '.join(selection)
 */
+
+/* Create download_queue table */
+CREATE TABLE download_queue(
+ task_id integer auto increment,
+ username           character varying(128), 
+ pid                integer,                
+ url                text,                   
+ filename           character varying(1024),
+ status             integer,                
+ created_time       integer,                
+ started_time       integer,                
+ total_size         bigint,                
+ current_size       bigint,                
+ current_rate       integer,                
+ extra_info         text,                
+ total_peers        integer,                
+ connected_peers    integer,                
+ total_pieces       integer,                
+ downloaded_pieces  integer,                
+ available_pieces   integer,                
+ torrent            bytea,                
+ upload_rate        integer,                
+ total_upload       bigint,                
+ seeding_ratio      integer,                
+ seeding_interval   integer,                
+ seeding_elapsed    integer,                
+ task_flags         integer,                
+ seeders            integer,                
+ leechers           integer,                
+ destination        text,                
+ unzip_password     text,                
+ unzip_progress     integer,                
+ given_filename     text,                
+ referer            text,                
+ cookie_path        text,                
+ thumbnail_status   integer,                
+ extra_data         json,                
+ completed_time     integer               
+);
