@@ -10,7 +10,7 @@ UI::UI()
     initSettings();
     updateDownloadsMenu();
     initStatusDriver();
-    refreshMainWindows();        
+    refreshMainWindows();
 }
 
 /* Free memory and exit curses */
@@ -21,7 +21,6 @@ UI::~UI()
     downloads_menu->clearItems();
     /* TODO - Pause all downloads -> we use pause to stop them since it does the same thing */
     //controller->killAll();
-    /* Delete main windows */
     main_windows.clear();
     endwin();
 }
@@ -36,7 +35,7 @@ void UI::initSettings()
     }
     else if (settings->load().code == ErrorCode::first_start_err){
         // TODO - initNewUserWin()
-        // paint new_user_wn with error message 
+        // paint new_user_wn with error message
     }
 }
 
@@ -139,7 +138,7 @@ void UI::statusDriver(int c)
         /* Signals to scroll status window down if the menu is scrolled down */
         /* If curr item id is > the maxixmum number of items displayed in the win -> offset */
         if (current_item_number > bottom_item) {
-            y_offset = (current_item_number - (p_max.y - 2)); 
+            y_offset = (current_item_number - (p_max.y - 2));
             bottom_item++;
             top_item++;
         }
@@ -188,7 +187,7 @@ int UI::firstStart()
                 {
                     /* Open a window and exit the function */
                     addNewDownload();
-                    done = true; 
+                    done = true;
                     break;
                 }
             case 'h':
@@ -288,7 +287,7 @@ void UI::initMainWindows()
     /* Window containing ownloads statuses - updated in a separate thread and connected to mainWin */
     main_windows.emplace_back(initWin(window_size_map["statusSz"], "status"));
 
-    /* Winodow displaying help message */ 
+    /* Winodow displaying help message */
     main_windows.emplace_back(initWin(window_size_map["pHelpSz"], "help"));
     main_windows.at(show_help_window_index)->printInMiddle(0, 0, col / 4, msgHelp, COLOR_PAIR(7));
 
@@ -349,7 +348,7 @@ void UI::paintHelpWindow(std::unique_ptr<CursesWindow>& win)
     win->drawBox(0, 0);
 }
 
-void UI::paintSettingsWindow(std::unique_ptr<CursesWindow>& win) 
+void UI::paintSettingsWindow(std::unique_ptr<CursesWindow>& win)
 {
     const int begy = 1;
     const point maxyx = win->getMaxyx();
@@ -430,7 +429,7 @@ void UI::paintAddDownloadWin(std::unique_ptr<CursesWindow>& win)
 //            else {
 //                stcolor = COLOR_PAIR(7);
 //            }
-//        }    
+//        }
 //
 //        main_windows.at(status_window_index)->printInMiddle(y, 0, p.x / 4, vec.at(offset).progress, color);
 //        main_windows.at(status_window_index)->printInMiddle(y, 0, p.x / 4 + vec.at(offset).progress.length() + 1," %", color);
@@ -448,7 +447,7 @@ std::unique_ptr<CursesMenu> UI::initMenu(std::vector<std::string> items_data)
     return std::make_unique<CursesMenu>(items_data);
 }
 
-/* Consistantly refresh the speed / progress /status of the current downloads */ 
+/* Consistantly refresh the speed / progress /status of the current downloads */
 void UI::updateDownloadsStatusWindow()
 {
     while (true) {
@@ -458,8 +457,8 @@ void UI::updateDownloadsStatusWindow()
                 break;
             }
         }
-        /* Sleep 100ms before refreshing the window again or the while loop will execute endlessly 
-         * so it doesn't monopolize time / ressources */ 
+        /* Sleep 100ms before refreshing the window again or the while loop will execute endlessly
+         * so it doesn't monopolize time / ressources */
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         /* y represents the y postion of the infos to print on the screen - it matches the location
          * of the corresponding download item on the future_update_downloads_status part of the screen */
@@ -502,7 +501,7 @@ int UI::stopStatusUpdate()
             //wait unitl execution is done
             ;
         }
-    } 
+    }
     return 0;
 }
 
@@ -511,7 +510,7 @@ int UI::stopStatusUpdate()
 int UI::showSettings()
 {
     settings_form = initForm(3);
-    settings_window = initWin(window_size_map["settingsSz"], "help"); 
+    settings_window = initWin(window_size_map["settingsSz"], "help");
 
     const std::vector<std::string> menu_items = {"Save", "Close"};
     point p_max = settings_window->getMaxyx();
@@ -557,7 +556,7 @@ int UI::navigateSettings()
     int curPos = 0;
     point maxyx = settings_window->getMaxyx();
 
-    curs_set(1);   
+    curs_set(1);
     settings_window->wMove(4, maxyx.x - 10);
     settings_window->refreshWin();
     settings_form->formDriver(REQ_FIRST_FIELD);
@@ -578,7 +577,7 @@ int UI::navigateSettings()
 
             case KEY_UP:
                 {
-                    // first field  
+                    // first field
                     if (curPos == 0) {
                         curs_set(0);
                         settings_menu->menuDriver(REQ_LAST_ITEM);
@@ -589,7 +588,7 @@ int UI::navigateSettings()
                         settings_form->formDriver(REQ_PREV_FIELD);
                         settings_form->formDriver(REQ_END_LINE);
                         curPos = 0;
-                    } 
+                    }
                     else if (curPos == 2) {
                         settings_form->formDriver(REQ_PREV_FIELD);
                         settings_form->formDriver(REQ_END_LINE);
@@ -675,7 +674,7 @@ int UI::navigateSettings()
                     // TODO - DOING - Save settings
                     else if (curPos == 3) {
                         if (settings_form->formDriver(REQ_VALIDATION) != E_OK) {
-                            //check error 
+                            //check error
                             ;
                         }
                         else {
@@ -755,8 +754,8 @@ int UI::navigateSettings()
                 //settings_window->printInMiddle(9, 0, maxyx.x, msg_err, COLOR_PAIR(1));
             }
             /* Restore cursor position */
-            settings_form->formDriver(currField); 
-            settings_form->formDriver(REQ_END_LINE); 
+            settings_form->formDriver(currField);
+            settings_form->formDriver(REQ_END_LINE);
             resize = false;
         }
 
@@ -799,7 +798,7 @@ int UI::navigateHelpWindow()
                     break;
                 }
 
-            default: 
+            default:
                 {
                     break;
                 }
@@ -823,8 +822,8 @@ int UI::navigateHelpWindow()
 /* Init a subwindow containg infos about the selected download */
 int UI::showDownloadDetails(const std::string& item_name)
 {
-    /* Important: We begin by assigning a new form to det_form unique_ptr and then assigning a new window to 
-     * det_win unique_ptr -> if we reassign the det_win pointer first and then try to reassign det_form, since 
+    /* Important: We begin by assigning a new form to det_form unique_ptr and then assigning a new window to
+     * det_win unique_ptr -> if we reassign the det_win pointer first and then try to reassign det_form, since
      * det_form has to free some memory corresponding to the old window (now deleted), we end up with a segfault */
     det_form = initForm(2);
     det_win = initWin(window_size_map["detSz"], "det");
@@ -832,7 +831,7 @@ int UI::showDownloadDetails(const std::string& item_name)
     setDetailsForm(det_win, det_form);
     paintDetailsWin(det_win, item_name);
 
-    // TODO 
+    // TODO
     //det_form->populateField(REQ_FIRST_FIELD, controller->getURL(item_name));
     det_form->populateField(REQ_FIRST_FIELD, "item_name");
     det_form->populateField(REQ_LAST_FIELD, item_name);
@@ -851,9 +850,9 @@ int UI::showDownloadDetails(const std::string& item_name)
    initializing functions. */
 int UI::addNewDownload()
 {
-    /* Important: We begin by assigning a new form to add_dl_form unique_ptr and then assigning a new window to 
-     * add_dl_win unique_ptr -> if we reset the add_dl_win pointer first and then try to reset add_dl_form, since 
-     * add_dl_form has to free some memory corresponding to the old window (now deleted), we end up with a 
+    /* Important: We begin by assigning a new form to add_dl_form unique_ptr and then assigning a new window to
+     * add_dl_win unique_ptr -> if we reset the add_dl_win pointer first and then try to reset add_dl_form, since
+     * add_dl_form has to free some memory corresponding to the old window (now deleted), we end up with a
      * segfault */
 
     add_dl_form = initForm(2);
@@ -1090,7 +1089,7 @@ int UI::navigateAddDownloadWindow()
     int currField = 0;
 
     int curPos = 0;
-    curs_set(1);   
+    curs_set(1);
     add_dl_win->wMove(4, 4);
     add_dl_win->refreshWin();
 
@@ -1111,7 +1110,7 @@ int UI::navigateAddDownloadWindow()
 
             case KEY_UP:
                 {
-                    // first field  
+                    // first field
                     if (curPos == 0) {
                         curs_set(0);
                         add_dl_menu->menuDriver(REQ_LAST_ITEM);
@@ -1122,7 +1121,7 @@ int UI::navigateAddDownloadWindow()
                         add_dl_form->formDriver(REQ_PREV_FIELD);
                         add_dl_form->formDriver(REQ_END_LINE);
                         curPos = 0;
-                    } 
+                    }
                     // any menu item
                     else {
                         curs_set(1);
@@ -1209,18 +1208,18 @@ int UI::navigateAddDownloadWindow()
                     // TODO - Helper functions
                     else if (curPos == 2) {
                         if (add_dl_form->formDriver(REQ_VALIDATION) != E_OK) {
-                            //check error 
+                            //check error
                             ;
                         }
                         else {
                             /* Get user input from the fields */
                             std::string url = add_dl_form->getFieldBuffer(0);
                             std::string filename = add_dl_form->getFieldBuffer(1);
-                            url = trimSpaces(url);                        
+                            url = trimSpaces(url);
                             /* TODO - after having trimmed spaces, count hown many links we have */
                             std::string urlField = url;
                             urlField.push_back(' ');
-                            // '\n' is replaced by ' ' 
+                            // '\n' is replaced by ' '
                             std::string delimiter = " ";
                             std::string token;
                             std::vector<std::string> urls;
@@ -1228,7 +1227,7 @@ int UI::navigateAddDownloadWindow()
                             while ((pos = urlField.find(delimiter)) != std::string::npos) {
                                 token = urlField.substr(0, pos);
                                 urls.push_back(token);
-                                // Remove found token from buffer 
+                                // Remove found token from buffer
                                 urlField.erase(0, pos + delimiter.length());
                             }
 
@@ -1293,7 +1292,7 @@ int UI::navigateAddDownloadWindow()
                             update_menu = true;
                         }
                     }
-                    // if 'Enter' (actually '\n') happens in a field -> treat it as a char 
+                    // if 'Enter' (actually '\n') happens in a field -> treat it as a char
                     break;
                 }
                 /* DEL backspace (macOS) */
@@ -1333,8 +1332,8 @@ int UI::navigateAddDownloadWindow()
                 add_dl_win->printInMiddle(9, 0, maxyx.x, msgInvalidURL, COLOR_PAIR(1));
             }
             /* Restore cursor position */
-            add_dl_form->formDriver(currField); 
-            add_dl_form->formDriver(REQ_END_LINE); 
+            add_dl_form->formDriver(currField);
+            add_dl_form->formDriver(REQ_END_LINE);
             resizeAdd = false;
         }
 
@@ -1399,7 +1398,7 @@ int UI::stopProgressBarThread()
             //wait unitl execution is done
             ;
         }
-    } 
+    }
     return 0;
 }
 
@@ -1463,16 +1462,16 @@ int UI::navigateDownloadDetailsWindow(const std::string& filename)
             break;
         }
         if (resizeDet) {
-            resizeDownloadDetailsWindow(filename);    
+            resizeDownloadDetailsWindow(filename);
             resizeDet = false;
         }
-    } 
+    }
     stopProgressBarThread();
 
     return update_menu;
 }
 
-/* Display a subwindow containing details about the selected download */ 
+/* Display a subwindow containing details about the selected download */
 void UI::progressBar(const std::string& filename)
 {
     point maxyx = progress_win->getMaxyx();
@@ -1509,8 +1508,8 @@ void UI::progressBar(const std::string& filename)
 
             int curProg = prog_counter * progBarWidth / 100.0;
             // TODO
-            //const std::string percent = stringifyNumber(controller->getProgress(filename), 2); 
-            const std::string percent = "77,7"; 
+            //const std::string percent = stringifyNumber(controller->getProgress(filename), 2);
+            const std::string percent = "77,7";
             std::string progStr;
             for (i = 0; i < curProg; ++i) {
                 progStr.push_back(' ');
@@ -1524,8 +1523,8 @@ void UI::progressBar(const std::string& filename)
                 progress_win->winAttrOff(COLOR_PAIR(16));
                 progress_win->refreshWin();
             }
-            /* Sleep 100ms before refreshing the window again or the while loop will execute endlessly 
-             * so it doesn't monopolize time / ressources */ 
+            /* Sleep 100ms before refreshing the window again or the while loop will execute endlessly
+             * so it doesn't monopolize time / ressources */
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             /* y represents the y postion of the infos to print on the screen - it matches the location
              * of the corresponding download item on the future_update_downloads_status part of the screen */
